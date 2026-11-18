@@ -72,9 +72,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         @foreach($banners as $banner)
             @php
-                $imgUrl = ($banner->image && file_exists(public_path('storage/' . $banner->image)))
-                    ? asset('storage/' . $banner->image)
-                    : null;
+                $imgUrl = \App\Helpers\ImageHelper::resolveUrl($banner->image);
                 $editPayload = [
                     'id'         => $banner->id,
                     'title'      => $banner->title,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
@@ -26,13 +27,13 @@ class BannerController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $path = $request->file('image')->store('banners', 'public');
+        $imageData = ImageHelper::toCompressedBase64($request->file('image'));
 
         Banner::create([
             'created_by' => Auth::guard('admin')->id(),
             'title'      => $validated['title'],
             'content'    => $validated['content'],
-            'image'      => $path,
+            'image'      => $imageData,
             'is_active'  => $request->boolean('is_active', true),
         ]);
 
@@ -55,10 +56,10 @@ class BannerController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
+            if ($banner->image && ! str_starts_with($banner->image, 'data:image') && Storage::disk('public')->exists($banner->image)) {
                 Storage::disk('public')->delete($banner->image);
             }
-            $data['image'] = $request->file('image')->store('banners', 'public');
+            $data['image'] = ImageHelper::toCompressedBase64($request->file('image'));
         }
 
         $banner->update($data);
@@ -75,7 +76,7 @@ class BannerController extends Controller
 
     public function destroy(Banner $banner)
     {
-        if ($banner->image && Storage::disk('public')->exists($banner->image)) {
+        if ($banner->image && ! str_starts_with($banner->image, 'data:image') && Storage::disk('public')->exists($banner->image)) {
             Storage::disk('public')->delete($banner->image);
         }
 

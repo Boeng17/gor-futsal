@@ -120,7 +120,7 @@
                     <div class="lg:col-span-2">
                         <div class="h-24 rounded-xl bg-sand/50 border border-ink/15 overflow-hidden mb-2">
                             @if($field->image)
-                                <img src="{{ asset('storage/' . $field->image) }}" class="w-full h-full object-cover">
+                                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($field->image) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-[11px] text-ink/60">Tanpa Foto</div>
                             @endif

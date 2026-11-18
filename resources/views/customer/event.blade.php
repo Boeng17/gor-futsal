@@ -22,8 +22,8 @@
                 <article class="wf-box rounded-2xl overflow-hidden flex flex-col justify-between">
                     <div>
                         <div class="h-56 bg-sand/50 border-b border-ink/15 overflow-hidden">
-                            @if($banner->image && file_exists(public_path('storage/' . $banner->image)))
-                                <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                            @if(\App\Helpers\ImageHelper::resolveUrl($banner->image))
+                                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-cream text-xs text-ink/60">
                                     BANNER EVENT GOR NUSANTARA

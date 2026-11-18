@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Field;
 use App\Services\QrisService;
@@ -62,7 +63,7 @@ class FieldController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('fields', 'public');
+            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'));
         }
 
         Field::create($validated);
@@ -90,10 +91,10 @@ class FieldController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($field->image && Storage::disk('public')->exists($field->image)) {
+            if ($field->image && ! str_starts_with($field->image, 'data:image') && Storage::disk('public')->exists($field->image)) {
                 Storage::disk('public')->delete($field->image);
             }
-            $validated['image'] = $request->file('image')->store('fields', 'public');
+            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'));
         }
 
         $field->update($validated);
@@ -119,7 +120,7 @@ class FieldController extends Controller
             ]);
         }
 
-        if ($field->image && Storage::disk('public')->exists($field->image)) {
+        if ($field->image && ! str_starts_with($field->image, 'data:image') && Storage::disk('public')->exists($field->image)) {
             Storage::disk('public')->delete($field->image);
         }
 

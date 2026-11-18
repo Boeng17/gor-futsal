@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ImageHelper;
 use App\Models\Banner;
 use App\Models\Booking;
 use App\Models\BookingItem;
@@ -436,7 +437,7 @@ class BookingController extends Controller
             'proof_image.required' => 'Foto / screenshot bukti transfer wajib diunggah.',
         ]);
 
-        $path = $request->file('proof_image')->store('proofs', 'public');
+        $path = ImageHelper::toCompressedBase64($request->file('proof_image'));
 
         $amount = $booking->payment_scheme === 'dp'
             ? (int) round($booking->total_amount * 0.5)

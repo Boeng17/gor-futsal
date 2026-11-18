@@ -9,9 +9,9 @@
     </a>
 
     <article class="wf-box rounded-3xl overflow-hidden">
-        @if($banner->image && file_exists(public_path('storage/' . $banner->image)))
+        @if(\App\Helpers\ImageHelper::resolveUrl($banner->image))
             <div class="h-72 sm:h-96 bg-sand border-b border-ink/15">
-                <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
             </div>
         @endif
 
