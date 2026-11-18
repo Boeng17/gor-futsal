@@ -1,0 +1,11 @@
+<?php
+
+$storagePath = '/tmp/storage';
+if (!is_dir($storagePath . '/framework/views')) {
+    mkdir($storagePath . '/framework/views', 0755, true);
+    mkdir($storagePath . '/framework/cache', 0755, true);
+    mkdir($storagePath . '/framework/sessions', 0755, true);
+    mkdir($storagePath . '/logs', 0755, true);
+}
+
+require __DIR__ . '/../public/index.php';

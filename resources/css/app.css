@@ -1,3 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        background-color: #E2D6C6;
+        color: #232B20;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, .font-display {
+        font-family: 'Lora', Georgia, serif;
+    }
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+.wf-box {
+    background: #FBF7F0;
+    border: 1px solid rgba(35, 43, 32, 0.22);
+    box-shadow: 0 6px 18px rgba(35, 43, 32, 0.10);
+}
+
+.wf-card-flat {
+    background: #FBF7F0;
+    border: 1px solid rgba(35, 43, 32, 0.22);
+    box-shadow: 0 2px 8px rgba(35, 43, 32, 0.06);
+}
+
+.wf-btn {
+    transition: transform .12s ease, box-shadow .12s ease, background-color .15s ease;
+    box-shadow: 0 2px 6px rgba(35, 43, 32, 0.16);
+}
+
+.wf-btn:hover {
+    box-shadow: 0 4px 10px rgba(35, 43, 32, 0.22);
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: #FFFFFF !important;
+    }
+}

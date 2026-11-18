@@ -1,30 +1,60 @@
+@props(['title' => null])
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $title ?? 'GOR Futsal Nusantara' }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-cream text-ink min-h-screen flex flex-col items-center justify-center px-4 py-10 selection:bg-accent selection:text-white">
+    <div class="mb-6 text-center">
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-3 group">
+            <span class="w-11 h-11 rounded-xl bg-ink text-paper flex items-center justify-center font-bold text-sm tracking-wider shadow">
+                GOR
+            </span>
+            <div class="text-left">
+                <span class="block text-sm font-extrabold tracking-tight text-ink">GOR FUTSAL NUSANTARA</span>
+                <span class="block text-[11px] text-ink/70">PORTAL AKSES INTERNAL</span>
             </div>
+        </a>
+    </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
-    </body>
+    <div class="w-full max-w-md wf-box rounded-2xl p-6 sm:p-8">
+        {{ $slot }}
+    </div>
+
+    <div class="mt-6">
+        <a href="{{ route('home') }}" class="text-xs font-medium text-ink/75 hover:text-accent transition">
+            ← Kembali ke Halaman Utama Penyewa
+        </a>
+    </div>
+    <script>
+        (function () {
+            function syncCsrfToken() {
+                fetch('/csrf-token', {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (data) {
+                    if (!data || !data.token) return;
+                    var meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) meta.setAttribute('content', data.token);
+                    document.querySelectorAll('input[name="_token"]').forEach(function (input) {
+                        input.value = data.token;
+                    });
+                })
+                .catch(function () {});
+            }
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') syncCsrfToken();
+            });
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) syncCsrfToken();
+            });
+        })();
+    </script>
+</body>
 </html>
