@@ -2,23 +2,62 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class QrisService
 {
     private const CONFIG_PATH = 'qris_config.json';
+    private const TABLE_NAME = 'qris_configs';
+
+    private function ensureTable(): bool
+    {
+        try {
+            if (! Schema::hasTable(self::TABLE_NAME)) {
+                Schema::create(self::TABLE_NAME, function (Blueprint $table) {
+                    $table->id();
+                    $table->text('raw_qris');
+                    $table->string('merchant_name', 100);
+                    $table->string('merchant_city', 100);
+                    $table->timestamps();
+                });
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 
     public function getConfig(): array
     {
-        $defaultStatic = '00020101021126610014COM.GO-JEK.WWW01189360091431234567890210G1234567890303UMI51440014ID.CO.QRIS.WWW0215ID10200123456780303UMI5204599953033605802ID5919GOR FUTSAL NUSANTAR6009TANGERANG61051541763049EC9';
+        $defaultStatic = '00020101021126610014COM.GO-JEK.WWW01189360091430693731450210G0693731450303UMI51440014ID.CO.QRIS.WWW0215ID10266223997430303UMI5204899953033605802ID5918AFIFAH KHOIRUNNISA6005BOGOR61051692162070703A0163045DCD';
+
+        if ($this->ensureTable()) {
+            try {
+                $row = DB::table(self::TABLE_NAME)->orderByDesc('id')->first();
+                if ($row && ! empty($row->raw_qris)) {
+                    return [
+                        'raw_qris'      => $row->raw_qris,
+                        'merchant_name' => $row->merchant_name ?: 'AFIFAH KHOIRUNNISA',
+                        'merchant_city' => $row->merchant_city ?: 'BOGOR',
+                        'is_custom'     => true,
+                        'updated_at'    => $row->updated_at,
+                    ];
+                }
+            } catch (\Throwable $e) {
+            }
+        }
 
         if (Storage::exists(self::CONFIG_PATH)) {
             $decoded = json_decode(Storage::get(self::CONFIG_PATH), true);
             if (is_array($decoded) && ! empty($decoded['raw_qris'])) {
                 return [
                     'raw_qris'      => $decoded['raw_qris'],
-                    'merchant_name' => $decoded['merchant_name'] ?? 'GOR FUTSAL NUSANTARA',
-                    'merchant_city' => $decoded['merchant_city'] ?? 'TANGERANG SELATAN',
+                    'merchant_name' => $decoded['merchant_name'] ?? 'AFIFAH KHOIRUNNISA',
+                    'merchant_city' => $decoded['merchant_city'] ?? 'BOGOR',
                     'is_custom'     => true,
                     'updated_at'    => $decoded['updated_at'] ?? null,
                 ];
@@ -27,9 +66,9 @@ class QrisService
 
         return [
             'raw_qris'      => $defaultStatic,
-            'merchant_name' => 'GOR FUTSAL NUSANTARA',
-            'merchant_city' => 'TANGERANG SELATAN',
-            'is_custom'     => false,
+            'merchant_name' => 'AFIFAH KHOIRUNNISA',
+            'merchant_city' => 'BOGOR',
+            'is_custom'     => true,
             'updated_at'    => null,
         ];
     }
@@ -53,15 +92,36 @@ class QrisService
             }
         }
 
-        $extractedName = $merchantName ?: ($tagMap['59'] ?? 'GOR FUTSAL NUSANTARA');
-        $extractedCity = $merchantCity ?: ($tagMap['60'] ?? 'TANGERANG SELATAN');
+        $extractedName = strtoupper(trim($merchantName ?: ($tagMap['59'] ?? 'AFIFAH KHOIRUNNISA')));
+        $extractedCity = strtoupper(trim($merchantCity ?: ($tagMap['60'] ?? 'BOGOR')));
+        $now = now()->toDateTimeString();
 
         $payload = [
             'raw_qris'      => $cleaned,
-            'merchant_name' => strtoupper(trim($extractedName)),
-            'merchant_city' => strtoupper(trim($extractedCity)),
-            'updated_at'    => now()->toDateTimeString(),
+            'merchant_name' => $extractedName,
+            'merchant_city' => $extractedCity,
+            'updated_at'    => $now,
         ];
+
+        if ($this->ensureTable()) {
+            $existing = DB::table(self::TABLE_NAME)->orderByDesc('id')->first();
+            if ($existing) {
+                DB::table(self::TABLE_NAME)->where('id', $existing->id)->update([
+                    'raw_qris'      => $cleaned,
+                    'merchant_name' => $extractedName,
+                    'merchant_city' => $extractedCity,
+                    'updated_at'    => $now,
+                ]);
+            } else {
+                DB::table(self::TABLE_NAME)->insert([
+                    'raw_qris'      => $cleaned,
+                    'merchant_name' => $extractedName,
+                    'merchant_city' => $extractedCity,
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
+                ]);
+            }
+        }
 
         Storage::put(self::CONFIG_PATH, json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
