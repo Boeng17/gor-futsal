@@ -6,42 +6,67 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-14">
 
     @if($banners->count() > 0)
+        @php
+            $bannerSlides = $banners->map(function ($b, $i) use ($banners) {
+                return [
+                    'id' => $b->id,
+                    'index' => $i + 1,
+                    'total' => $banners->count(),
+                    'date' => $b->created_at->translatedFormat('d F Y'),
+                    'title' => $b->title,
+                    'excerpt' => \Illuminate\Support\Str::limit($b->content, 240),
+                    'image_url' => \App\Helpers\ImageHelper::resolveUrl($b->image, 'banner', $b->id),
+                    'detail_url' => route('banners.show', $b),
+                ];
+            })->values();
+        @endphp
+
         <section x-data="{
+            slides: {{ Js::from($bannerSlides) }},
             active: 0,
-            total: {{ $banners->count() }},
-            direction: 1,
+            isTransitioning: false,
             paused: false,
             touchStartX: 0,
             timer: null,
+            get current() {
+                return this.slides[this.active];
+            },
             init() {
-                if (this.total > 1) {
+                this.slides.forEach((s) => {
+                    if (s.image_url) {
+                        const img = new Image();
+                        img.src = s.image_url;
+                    }
+                });
+                if (this.slides.length > 1) {
                     this.startAuto();
                 }
             },
             startAuto() {
                 this.stopAuto();
                 this.timer = setInterval(() => {
-                    if (!this.paused) this.next(true);
+                    if (!this.paused) this.switchTo((this.active + 1) % this.slides.length, true);
                 }, 6500);
             },
             stopAuto() {
                 if (this.timer) clearInterval(this.timer);
             },
-            next(fromAuto = false) {
-                this.direction = 1;
-                this.active = (this.active + 1) % this.total;
-                if (!fromAuto && this.total > 1) this.startAuto();
+            switchTo(targetIndex, fromAuto = false) {
+                if (this.slides.length <= 1 || targetIndex === this.active || this.isTransitioning) return;
+                this.isTransitioning = true;
+                setTimeout(() => {
+                    this.active = targetIndex;
+                    requestAnimationFrame(() => {
+                        this.isTransitioning = false;
+                    });
+                }, 170);
+                if (!fromAuto) this.startAuto();
+            },
+            next() {
+                this.switchTo((this.active + 1) % this.slides.length);
             },
             prev() {
-                this.direction = -1;
-                this.active = (this.active - 1 + this.total) % this.total;
-                if (this.total > 1) this.startAuto();
-            },
-            goTo(index) {
-                if (index === this.active) return;
-                this.direction = index > this.active ? 1 : -1;
-                this.active = index;
-                if (this.total > 1) this.startAuto();
+                this.switchTo((this.active - 1 + this.slides.length) % this.slides.length);
             },
             onTouchStart(e) {
                 this.touchStartX = e.changedTouches[0].clientX;
@@ -59,103 +84,87 @@
         @touchend.passive="onTouchEnd($event)"
         class="wf-box rounded-3xl p-6 sm:p-8 overflow-hidden">
 
-            <div class="grid grid-cols-1">
-                @foreach($banners as $idx => $banner)
-                    @php
-                        $bannerUrl = \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id);
-                    @endphp
-                    <div x-show="active === {{ $idx }}"
-                         x-transition:enter="transition ease-out duration-500"
-                         x-transition:enter-start="opacity-0 translate-x-4"
-                         x-transition:enter-end="opacity-100 translate-x-0"
-                         x-transition:leave="transition ease-in duration-300"
-                         x-transition:leave-start="opacity-100 translate-x-0"
-                         x-transition:leave-end="opacity-0 -translate-x-4"
-                         style="grid-area: 1 / 1;"
-                         class="flex flex-col justify-between">
-                        <div>
-                            <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-ink/75 mb-2">
-                                <span class="uppercase tracking-wider font-bold text-accent">
-                                    ★ INFO EVENT & TURNAMEN • {{ $banner->created_at->translatedFormat('d F Y') }}
-                                </span>
-                                <span class="px-2.5 py-0.5 rounded-full bg-cream border border-ink/15 font-semibold">
-                                    EVENT {{ $idx + 1 }} / {{ $banners->count() }}
-                                </span>
-                            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-ink/75 mb-2">
+                <span class="uppercase tracking-wider font-bold text-accent">
+                    ★ INFO EVENT & TURNAMEN • <span x-text="current.date"></span>
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-cream border border-ink/15 font-semibold">
+                    EVENT <span x-text="current.index"></span> / <span x-text="current.total"></span>
+                </span>
+            </div>
 
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink mb-5 leading-tight">
-                                {{ $banner->title }}
-                            </h1>
+            <div :class="isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'"
+                 class="transition-all duration-300 ease-out">
+                <h1 x-text="current.title"
+                    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-ink mb-5 leading-tight">
+                </h1>
 
-                            <div class="group relative rounded-2xl overflow-hidden border border-ink/20 bg-sand/50 h-64 sm:h-80 lg:h-96 mb-5">
-                                @if($bannerUrl)
-                                    <img src="{{ $bannerUrl }}"
-                                         alt="{{ $banner->title }}"
-                                         loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                                         decoding="async"
-                                         class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]">
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#DFD1BC] to-[#CFC0A8]">
-                                        <svg viewBox="0 0 600 220" class="w-full max-w-2xl h-48 text-ink" fill="none" stroke="currentColor" stroke-width="2.2">
-                                            <path d="M20 45 Q300 10 580 45" />
-                                            <path d="M20 60 Q300 25 580 60" stroke-dasharray="6 6" />
-                                            <polygon points="140,105 460,105 510,205 90,205" fill="#95A87E" stroke="#232B20" stroke-width="2.5"/>
-                                            <line x1="300" y1="105" x2="300" y2="205"/>
-                                            <circle cx="300" cy="152" r="26"/>
-                                            <circle cx="300" cy="152" r="3" fill="#232B20"/>
-                                            <polygon points="118,135 142,130 142,168 118,175" fill="#FBF7F0" fill-opacity="0.7"/>
-                                            <polygon points="482,135 458,130 458,168 482,175" fill="#FBF7F0" fill-opacity="0.7"/>
-                                        </svg>
-                                        <span class="text-xs tracking-wider uppercase text-ink/75 mt-2">
-                                            GOR Futsal Nusantara — Arena Resmi Turnamen & Komunitas
-                                        </span>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <p class="text-sm text-ink/85 leading-relaxed max-w-4xl mb-6">
-                                {{ Str::limit($banner->content, 240) }}
-                            </p>
+                <div class="group relative rounded-2xl overflow-hidden border border-ink/20 bg-sand/50 h-64 sm:h-80 lg:h-96 mb-5">
+                    <template x-if="current.image_url">
+                        <img :src="current.image_url"
+                             :alt="current.title"
+                             decoding="async"
+                             class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]">
+                    </template>
+                    <template x-if="!current.image_url">
+                        <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#DFD1BC] to-[#CFC0A8]">
+                            <svg viewBox="0 0 600 220" class="w-full max-w-2xl h-48 text-ink" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path d="M20 45 Q300 10 580 45" />
+                                <path d="M20 60 Q300 25 580 60" stroke-dasharray="6 6" />
+                                <polygon points="140,105 460,105 510,205 90,205" fill="#95A87E" stroke="#232B20" stroke-width="2.5"/>
+                                <line x1="300" y1="105" x2="300" y2="205"/>
+                                <circle cx="300" cy="152" r="26"/>
+                                <circle cx="300" cy="152" r="3" fill="#232B20"/>
+                                <polygon points="118,135 142,130 142,168 118,175" fill="#FBF7F0" fill-opacity="0.7"/>
+                                <polygon points="482,135 458,130 458,168 482,175" fill="#FBF7F0" fill-opacity="0.7"/>
+                            </svg>
+                            <span class="text-xs tracking-wider uppercase text-ink/75 mt-2">
+                                GOR Futsal Nusantara — Arena Resmi Turnamen & Komunitas
+                            </span>
                         </div>
+                    </template>
+                </div>
 
-                        <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <a href="{{ route('banners.show', $banner) }}"
-                                   class="wf-btn px-5 py-2.5 rounded-full bg-accent hover:bg-accentDark text-paper text-xs font-bold">
-                                    Baca Detail Event & Promo →
-                                </a>
-                                <a href="#daftar-lapangan"
-                                   class="wf-btn px-5 py-2.5 rounded-full bg-ink hover:bg-ink/90 text-paper text-xs font-bold">
-                                    Pilih Lapangan & Booking ↓
-                                </a>
-                            </div>
+                <p x-text="current.excerpt"
+                   class="text-sm text-ink/85 leading-relaxed max-w-4xl mb-6">
+                </p>
+            </div>
 
-                            @if($banners->count() > 1)
-                                <div class="flex items-center gap-3">
-                                    <div class="hidden sm:flex items-center gap-1.5">
-                                        @foreach($banners as $dotIdx => $dotBanner)
-                                            <button type="button"
-                                                    @click="goTo({{ $dotIdx }})"
-                                                    :class="active === {{ $dotIdx }} ? 'w-6 bg-accent' : 'w-2 bg-ink/25 hover:bg-ink/45'"
-                                                    class="h-2 rounded-full transition-all duration-300"
-                                                    aria-label="Slide {{ $dotIdx + 1 }}"></button>
-                                        @endforeach
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button @click="prev()" type="button"
-                                                class="px-3.5 py-1.5 rounded-full bg-cream hover:bg-sand border border-ink/20 text-xs font-semibold transition duration-200 active:scale-95">
-                                            ← Prev
-                                        </button>
-                                        <button @click="next()" type="button"
-                                                class="px-3.5 py-1.5 rounded-full bg-cream hover:bg-sand border border-ink/20 text-xs font-semibold transition duration-200 active:scale-95">
-                                            Next →
-                                        </button>
-                                    </div>
-                                </div>
-                            @endif
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
+                <div class="flex flex-wrap items-center gap-3">
+                    <a :href="current.detail_url"
+                       class="wf-btn px-5 py-2.5 rounded-full bg-accent hover:bg-accentDark text-paper text-xs font-bold">
+                        Baca Detail Event & Promo →
+                    </a>
+                    <a href="#daftar-lapangan"
+                       class="wf-btn px-5 py-2.5 rounded-full bg-ink hover:bg-ink/90 text-paper text-xs font-bold">
+                        Pilih Lapangan & Booking ↓
+                    </a>
+                </div>
+
+                @if($banners->count() > 1)
+                    <div class="flex items-center gap-3">
+                        <div class="hidden sm:flex items-center gap-1.5">
+                            <template x-for="(s, dotIdx) in slides" :key="s.id">
+                                <button type="button"
+                                        @click="switchTo(dotIdx)"
+                                        :class="active === dotIdx ? 'w-6 bg-accent' : 'w-2 bg-ink/25 hover:bg-ink/45'"
+                                        class="h-2 rounded-full transition-all duration-300"
+                                        :aria-label="'Slide ' + (dotIdx + 1)"></button>
+                            </template>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="prev()" type="button"
+                                    class="px-3.5 py-1.5 rounded-full bg-cream hover:bg-sand border border-ink/20 text-xs font-semibold transition duration-200 active:scale-95">
+                                ← Prev
+                            </button>
+                            <button @click="next()" type="button"
+                                    class="px-3.5 py-1.5 rounded-full bg-cream hover:bg-sand border border-ink/20 text-xs font-semibold transition duration-200 active:scale-95">
+                                Next →
+                            </button>
                         </div>
                     </div>
-                @endforeach
+                @endif
             </div>
         </section>
     @endif
