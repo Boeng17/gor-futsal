@@ -8,15 +8,19 @@ class ImageHelper
 {
     public static function toCompressedBase64(UploadedFile $file, int $maxWidth = 800, int $quality = 75): string
     {
-        $path = $file->getRealPath();
-        $info = getimagesize($path);
-        $mime = $info['mime'] ?? 'image/jpeg';
+        $path = $file->getRealPath() ?: $file->getPathname();
+        $raw = file_get_contents($path);
+        $info = @getimagesizefromstring($raw);
+        $mime = $info['mime'] ?? $file->getMimeType() ?? 'image/jpeg';
 
-        $source = match ($mime) {
-            'image/png' => imagecreatefrompng($path),
-            'image/webp' => imagecreatefromwebp($path),
-            default => imagecreatefromjpeg($path),
-        };
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagecreatetruecolor')) {
+            return 'data:' . $mime . ';base64,' . base64_encode($raw);
+        }
+
+        $source = @imagecreatefromstring($raw);
+        if (! $source) {
+            return 'data:' . $mime . ';base64,' . base64_encode($raw);
+        }
 
         $origWidth = imagesx($source);
         $origHeight = imagesy($source);
@@ -41,12 +45,16 @@ class ImageHelper
         imagedestroy($source);
         imagedestroy($canvas);
 
+        if (! $binary) {
+            return 'data:' . $mime . ';base64,' . base64_encode($raw);
+        }
+
         return 'data:image/jpeg;base64,' . base64_encode($binary);
     }
 
     public static function resolveUrl(?string $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 

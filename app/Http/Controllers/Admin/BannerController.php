@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
@@ -56,9 +55,6 @@ class BannerController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            if ($banner->image && ! str_starts_with($banner->image, 'data:image') && Storage::disk('public')->exists($banner->image)) {
-                Storage::disk('public')->delete($banner->image);
-            }
             $data['image'] = ImageHelper::toCompressedBase64($request->file('image'));
         }
 
@@ -76,10 +72,6 @@ class BannerController extends Controller
 
     public function destroy(Banner $banner)
     {
-        if ($banner->image && ! str_starts_with($banner->image, 'data:image') && Storage::disk('public')->exists($banner->image)) {
-            Storage::disk('public')->delete($banner->image);
-        }
-
         $banner->delete();
 
         return back()->with('success', 'Banner berhasil dihapus.');

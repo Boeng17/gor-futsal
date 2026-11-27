@@ -8,7 +8,6 @@ use App\Models\Field;
 use App\Services\QrisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
 class FieldController extends Controller
 {
@@ -91,9 +90,6 @@ class FieldController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($field->image && ! str_starts_with($field->image, 'data:image') && Storage::disk('public')->exists($field->image)) {
-                Storage::disk('public')->delete($field->image);
-            }
             $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'));
         }
 
@@ -118,10 +114,6 @@ class FieldController extends Controller
             return back()->withErrors([
                 'field' => 'Lapangan tidak dapat dihapus karena sudah memiliki riwayat pemesanan. Ubah status ke Maintenance jika tidak digunakan.',
             ]);
-        }
-
-        if ($field->image && ! str_starts_with($field->image, 'data:image') && Storage::disk('public')->exists($field->image)) {
-            Storage::disk('public')->delete($field->image);
         }
 
         $field->delete();
