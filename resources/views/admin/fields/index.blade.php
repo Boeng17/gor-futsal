@@ -1,28 +1,28 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'CMS Lapangan & QRIS — Admin GOR Futsal Nusantara')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+<div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <p class="font-mono text-xs uppercase tracking-widest text-accent font-bold">PENGATURAN ARENA & PEMBAYARAN</p>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-ink mt-1">CMS Lapangan & Konfigurasi QRIS</h1>
-            <p class="text-xs sm:text-sm text-ink/75 mt-1">Atur data lapangan, tarif per jam, serta payload QRIS dinamis merchant.</p>
+            <h1 class="text-2xl font-extrabold text-ink mt-1">CMS Lapangan & Konfigurasi QRIS</h1>
+            <p class="text-xs text-ink/75 mt-1">Atur data lapangan, tarif per jam, serta payload QRIS dinamis merchant.</p>
         </div>
-        <a href="{{ route('admin.banners.index') }}" class="wf-btn inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-paper border border-ink/25 text-xs font-bold text-ink">
+        <a href="{{ route('admin.banners.index') }}" class="wf-btn inline-flex items-center justify-center px-4 py-2 rounded-xl bg-paper border border-ink/25 text-xs font-bold text-ink">
             ← Kelola Banner Beranda
         </a>
     </div>
 
     @if(session('success'))
-        <div class="p-4 rounded-2xl bg-emerald-100 border border-emerald-700/30 text-emerald-950 text-xs sm:text-sm font-semibold">
+        <div class="p-4 rounded-2xl bg-emerald-100 border border-emerald-700/30 text-emerald-950 text-xs font-semibold">
             {{ session('success') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="p-4 rounded-2xl bg-rose-100 border border-rose-700/30 text-rose-950 text-xs sm:text-sm space-y-1">
+        <div class="p-4 rounded-2xl bg-rose-100 border border-rose-700/30 text-rose-950 text-xs space-y-1">
             <p class="font-bold">Periksa kembali input berikut:</p>
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
@@ -35,7 +35,7 @@
     <div class="wf-box rounded-2xl p-6 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-                <h2 class="text-lg font-bold text-ink">Konfigurasi QRIS Dinamis</h2>
+                <h2 class="text-base font-bold text-ink">Konfigurasi QRIS Dinamis</h2>
                 <p class="text-xs text-ink/70">Nominal tagihan DP 50% dan Lunas otomatis disisipkan ke payload QRIS saat pelanggan membayar.</p>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold {{ $qrisConfig['is_custom'] ? 'bg-emerald-100 text-emerald-950' : 'bg-amber-100 text-amber-950' }}">
@@ -69,7 +69,7 @@
     </div>
 
     <div class="wf-box rounded-2xl p-6 space-y-4">
-        <h2 class="text-lg font-bold text-ink">Tambah Lapangan Baru</h2>
+        <h2 class="text-base font-bold text-ink">Tambah Lapangan Baru</h2>
         <form action="{{ route('admin.fields.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
             @csrf
             <div class="md:col-span-4 space-y-1">
@@ -111,7 +111,7 @@
     </div>
 
     <div class="space-y-4">
-        <h2 class="text-lg font-bold text-ink">Daftar Lapangan ({{ $fields->count() }})</h2>
+        <h2 class="text-base font-bold text-ink">Daftar Lapangan ({{ $fields->count() }})</h2>
         @foreach($fields as $field)
             <div class="wf-box rounded-2xl p-5 space-y-4">
                 <div class="flex flex-col md:flex-row gap-5">

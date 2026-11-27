@@ -1,28 +1,28 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Kelola Banner & Event — Admin GOR Futsal Nusantara')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+<div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <p class="font-mono text-xs uppercase tracking-widest text-accent font-bold">CMS PROMO & TURNAMEN</p>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-ink mt-1">Kelola Banner Halaman Beranda</h1>
-            <p class="text-xs sm:text-sm text-ink/75 mt-1">Unggah banner promo atau turnamen. Gambar otomatis dioptimalkan ke lebar 1080px agar ringan dan tajam.</p>
+            <h1 class="text-2xl font-extrabold text-ink mt-1">Kelola Banner Halaman Beranda</h1>
+            <p class="text-xs text-ink/75 mt-1">Unggah banner promo atau turnamen. Gambar otomatis dioptimalkan ke lebar 1080px agar ringan dan tajam.</p>
         </div>
-        <a href="{{ route('admin.fields.index') }}" class="wf-btn inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-paper border border-ink/25 text-xs font-bold text-ink">
+        <a href="{{ route('admin.fields.index') }}" class="wf-btn inline-flex items-center justify-center px-4 py-2 rounded-xl bg-paper border border-ink/25 text-xs font-bold text-ink">
             Kelola Lapangan & QRIS →
         </a>
     </div>
 
     @if(session('success'))
-        <div class="p-4 rounded-2xl bg-emerald-100 border border-emerald-700/30 text-emerald-950 text-xs sm:text-sm font-semibold">
+        <div class="p-4 rounded-2xl bg-emerald-100 border border-emerald-700/30 text-emerald-950 text-xs font-semibold">
             {{ session('success') }}
         </div>
     @endif
 
     @if($errors->any())
-        <div class="p-4 rounded-2xl bg-rose-100 border border-rose-700/30 text-rose-950 text-xs sm:text-sm space-y-1">
+        <div class="p-4 rounded-2xl bg-rose-100 border border-rose-700/30 text-rose-950 text-xs space-y-1">
             <p class="font-bold">Periksa kembali input berikut:</p>
             <ul class="list-disc list-inside">
                 @foreach($errors->all() as $error)
@@ -33,7 +33,7 @@
     @endif
 
     <div class="wf-box rounded-2xl p-6">
-        <h2 class="text-lg font-bold text-ink mb-4">Tambah Banner Baru</h2>
+        <h2 class="text-base font-bold text-ink mb-4">Tambah Banner Baru</h2>
         <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-4 text-xs">
             @csrf
             <div class="lg:col-span-6 space-y-1.5">
@@ -70,7 +70,7 @@
     </div>
 
     <div class="space-y-4">
-        <h2 class="text-lg font-bold text-ink">Daftar Banner Tersimpan ({{ $banners->count() }})</h2>
+        <h2 class="text-base font-bold text-ink">Daftar Banner Tersimpan ({{ $banners->count() }})</h2>
         @forelse($banners as $banner)
             <div class="wf-box rounded-2xl p-5 space-y-4">
                 <div class="flex flex-col md:flex-row gap-5">
@@ -108,11 +108,9 @@
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-bold {{ $banner->is_active ? 'bg-emerald-100 text-emerald-950' : 'bg-amber-100 text-amber-950' }}">
                                 {{ $banner->is_active ? 'AKTIF DI BERANDA' : 'NONAKTIF' }}
                             </span>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button type="submit" class="wf-btn px-4 py-2 rounded-xl bg-accent text-white font-bold">
-                                    Simpan Perubahan
-                                </button>
-                            </div>
+                            <button type="submit" class="wf-btn px-4 py-2 rounded-xl bg-accent text-white font-bold">
+                                Simpan Perubahan
+                            </button>
                         </div>
                     </form>
                 </div>
