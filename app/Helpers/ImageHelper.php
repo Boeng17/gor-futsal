@@ -65,7 +65,15 @@ class ImageHelper
             return null;
         }
 
-        if (str_starts_with($value, 'data:image') || str_starts_with($value, 'http')) {
+        if (str_starts_with($value, 'data:image')) {
+            // Cegah error 500 FUNCTION_RESPONSE_PAYLOAD_TOO_LARGE Vercel jika ada sisa Base64 > 400KB
+            if (strlen($value) > 400000) {
+                return null;
+            }
+            return $value;
+        }
+
+        if (str_starts_with($value, 'http')) {
             return $value;
         }
 
