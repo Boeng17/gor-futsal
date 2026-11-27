@@ -8,7 +8,7 @@
     <div>
         <div class="relative h-52 bg-sand/60 border-b border-ink/15 overflow-hidden">
             @if($field->image)
-                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($field->image) }}"
+                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}"
                      alt="{{ $field->name }}"
                      class="w-full h-full object-cover">
             @else

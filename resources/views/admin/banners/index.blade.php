@@ -72,7 +72,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         @foreach($banners as $banner)
             @php
-                $imgUrl = \App\Helpers\ImageHelper::resolveUrl($banner->image);
+                $imgUrl = \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id)
                 $editPayload = [
                     'id'         => $banner->id,
                     'title'      => $banner->title,

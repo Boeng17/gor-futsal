@@ -142,7 +142,7 @@
                                 'stage'      => strtoupper($pendingPay->payment_stage),
                                 'amount'     => number_format($pendingPay->amount, 0, ',', '.'),
                                 'status'     => $pendingPay->status,
-                                'proof_url'  => \App\Helpers\ImageHelper::resolveUrl($pendingPay->proof_image),
+                                'proof_url'  => \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id),
                                 'verify_url' => route(($routePrefix ?? 'kasir') . '.payments.verify', $pendingPay),
                                 'reject_url' => route(($routePrefix ?? 'kasir') . '.payments.reject', $pendingPay),
                             ] : null;

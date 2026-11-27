@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 
 class ImageHelper
 {
-    public static function toCompressedBase64(UploadedFile $file, int $maxWidth = 1080, int $quality = 75): string
+    public static function toCompressedBase64(UploadedFile $file, int $maxWidth = 1440, int $quality = 82): string
     {
         $path = $file->getRealPath() ?: $file->getPathname();
         $raw = file_get_contents($path);
@@ -38,16 +38,9 @@ class ImageHelper
         imagefill($canvas, 0, 0, $white);
         imagecopyresampled($canvas, $source, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
 
-        $currentQuality = $quality;
-        $binary = '';
-        $maxBytes = 240 * 1024;
-
-        do {
-            ob_start();
-            imagejpeg($canvas, null, $currentQuality);
-            $binary = ob_get_clean();
-            $currentQuality -= 10;
-        } while ($binary && strlen($binary) > $maxBytes && $currentQuality >= 40);
+        ob_start();
+        imagejpeg($canvas, null, $quality);
+        $binary = ob_get_clean();
 
         imagedestroy($source);
         imagedestroy($canvas);
@@ -59,14 +52,16 @@ class ImageHelper
         return 'data:image/jpeg;base64,' . base64_encode($binary);
     }
 
-    public static function resolveUrl(?string $value): ?string
+    public static function resolveUrl(?string $value, ?string $mediaType = null, ?int $mediaId = null): ?string
     {
         if (! $value) {
             return null;
         }
 
         if (str_starts_with($value, 'data:image')) {
-            // Cegah error 500 FUNCTION_RESPONSE_PAYLOAD_TOO_LARGE Vercel jika ada sisa Base64 > 400KB
+            if ($mediaType && $mediaId) {
+                return route('media.show', ['type' => $mediaType, 'id' => $mediaId]);
+            }
             if (strlen($value) > 400000) {
                 return null;
             }

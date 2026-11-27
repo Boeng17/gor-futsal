@@ -9,9 +9,9 @@
     </a>
 
     <article class="wf-box rounded-3xl overflow-hidden">
-        @if(\App\Helpers\ImageHelper::resolveUrl($banner->image))
+        @if(\App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id))
             <div class="h-72 sm:h-96 bg-sand border-b border-ink/15">
-                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
             </div>
         @endif
 

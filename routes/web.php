@@ -147,3 +147,25 @@ Route::get('/media/{type}/{id}', function (string $type, int $id) {
 
     return redirect($raw);
 })->name('media.show');
+
+Route::get('/media/{type}/{id}', function (string $type, int $id) {
+    $raw = match ($type) {
+        'banner' => \App\Models\Banner::where('id', $id)->value('image'),
+        'field'  => \App\Models\Field::where('id', $id)->value('image'),
+        'proof'  => \App\Models\Payment::where('id', $id)->value('proof_image'),
+        default  => null,
+    };
+
+    if (! $raw) {
+        abort(404);
+    }
+
+    if (preg_match('/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/', $raw, $m)) {
+        return response(base64_decode($m[2]), 200, [
+            'Content-Type'  => $m[1],
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    return redirect($raw);
+})->name('media.show');

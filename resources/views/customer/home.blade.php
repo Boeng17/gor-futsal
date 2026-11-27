@@ -28,8 +28,8 @@
                     </h1>
 
                     <div class="relative rounded-2xl overflow-hidden border border-ink/20 bg-sand/50 h-64 sm:h-80 lg:h-96 mb-5">
-                        @if(\App\Helpers\ImageHelper::resolveUrl($banner->image))
-                            <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                        @if(\App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id))
+                            <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#DFD1BC] to-[#CFC0A8]">
                                 <svg viewBox="0 0 600 220" class="w-full max-w-2xl h-48 text-ink" fill="none" stroke="currentColor" stroke-width="2.2">
