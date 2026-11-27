@@ -19,7 +19,7 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+    <div class="gfn-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div class="lg:col-span-6 space-y-4">
             <div>
                 <span class="block text-[11px] uppercase tracking-widest text-accent font-bold mb-1">
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div class="space-y-4 pt-2">
+    <div class="gfn-reveal space-y-4 pt-2">
         <div>
             <span class="block text-xs uppercase tracking-widest text-accent font-bold mb-1">
                 PUSAT INFORMASI PENYEWA
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <div class="rounded-3xl sm:rounded-full border border-dashed border-ink/30 bg-paper/60 px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="gfn-reveal rounded-3xl sm:rounded-full border border-dashed border-ink/30 bg-paper/60 px-6 sm:px-8 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-xs sm:text-sm text-ink/85 text-center sm:text-left">
             Sudah tahu jadwal yang diinginkan? Langsung pesan lapangan dari halaman Home.
         </p>

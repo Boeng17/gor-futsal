@@ -4,13 +4,13 @@
     $isMaint = $field->status === 'maintenance';
 @endphp
 
-<article class="wf-box rounded-2xl overflow-hidden flex flex-col justify-between transition duration-200 hover:-translate-y-0.5">
+<article class="group wf-box h-full rounded-2xl overflow-hidden flex flex-col justify-between hover:-translate-y-1">
     <div>
         <div class="relative h-52 bg-sand/60 border-b border-ink/15 overflow-hidden">
             @if($field->image)
-                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}"
+                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($field->image, 'field', $field->id) }}"
                      alt="{{ $field->name }}"
-                     class="w-full h-full object-cover">
+                     loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
             @else
                 <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#D6C8B3] to-[#E2D6C6]">
                     <svg viewBox="0 0 240 120" class="w-48 h-24 text-ink/75" fill="none" stroke="currentColor" stroke-width="2">

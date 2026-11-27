@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10">
-    <div class="wf-box rounded-3xl p-8 sm:p-12 space-y-6">
+    <div class="gfn-reveal wf-box rounded-3xl p-8 sm:p-12 space-y-6">
         <span class="inline-block px-3 py-1 rounded-full bg-cream border border-ink/20 text-[11px] uppercase tracking-widest text-accent font-bold">
             OUR STORY • VISI & DEDIKASI ARENA
         </span>
@@ -18,7 +18,7 @@
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            <div class="p-6 rounded-2xl bg-cream/60 border border-ink/15 space-y-2">
+            <div class="gfn-reveal p-6 rounded-2xl bg-cream/60 border border-ink/15 space-y-2 transition-transform duration-300 hover:-translate-y-0.5">
                 <span class="text-xs font-bold text-accent">01 • STANDAR ARENA KOMPETISI</span>
                 <h3 class="text-xl font-bold text-ink">Kualitas Lantai & Pencahayaan</h3>
                 <p class="text-xs text-ink/80 leading-relaxed">
@@ -26,7 +26,7 @@
                 </p>
             </div>
 
-            <div class="p-6 rounded-2xl bg-cream/60 border border-ink/15 space-y-2">
+            <div class="gfn-reveal p-6 rounded-2xl bg-cream/60 border border-ink/15 space-y-2 transition-transform duration-300 hover:-translate-y-0.5">
                 <span class="text-xs font-bold text-accent">02 • RUMAH BAGI EVENT INDIE</span>
                 <h3 class="text-xl font-bold text-ink">Dukungan Penuh Komunitas</h3>
                 <p class="text-xs text-ink/80 leading-relaxed">

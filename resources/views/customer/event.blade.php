@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div class="gfn-reveal flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
             <span class="block text-xs uppercase tracking-widest text-accent font-bold mb-1">
                 AGENDA KOMPETISI & PROMO
@@ -19,11 +19,11 @@
     @if($banners->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @foreach($banners as $banner)
-                <article class="wf-box rounded-2xl overflow-hidden flex flex-col justify-between">
+                <article class="gfn-reveal group wf-box rounded-2xl overflow-hidden flex flex-col justify-between hover:-translate-y-1">
                     <div>
                         <div class="h-56 bg-sand/50 border-b border-ink/15 overflow-hidden">
                             @if(\App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id))
-                                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}" alt="{{ $banner->title }}" class="w-full h-full object-cover">
+                                <img src="{{ \App\Helpers\ImageHelper::resolveUrl($banner->image, 'banner', $banner->id) }}" alt="{{ $banner->title }}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-cream text-xs text-ink/60">
                                     BANNER EVENT GOR NUSANTARA

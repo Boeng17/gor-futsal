@@ -2,11 +2,11 @@
     $activeEventsCount = \App\Models\Banner::where('is_active', true)->count();
 @endphp
 
-<header x-data="{ open: false }" class="sticky top-0 z-40 bg-paper/95 backdrop-blur border-b border-ink/15 no-print">
+<header x-data="{ open: false }" class="sticky top-0 z-40 bg-paper/95 backdrop-blur-md border-b border-ink/15 transition-shadow duration-300 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20 gap-4">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-ink text-paper flex items-center justify-center font-extrabold text-xs tracking-wider shadow-sm">
+            <a href="{{ route('home') }}" class="group flex items-center gap-3 shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-ink text-paper flex items-center justify-center font-extrabold text-xs tracking-wider shadow-sm transition-transform duration-300 group-hover:scale-105">
                     GOR
                 </div>
                 <div>
@@ -65,7 +65,7 @@
             </div>
 
             <button @click="open = !open" type="button"
-                    class="lg:hidden p-2 rounded-xl border border-ink/20 bg-cream/60 text-ink focus:outline-none">
+                    class="lg:hidden p-2 rounded-xl border border-ink/20 bg-cream/60 hover:bg-sand/70 text-ink transition duration-200 active:scale-95 focus:outline-none">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     <path x-show="open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -73,7 +73,15 @@
             </button>
         </div>
 
-        <div x-show="open" x-cloak class="lg:hidden pb-4 pt-2 border-t border-ink/10 space-y-1.5">
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-250"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-180"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             x-cloak
+             class="lg:hidden pb-4 pt-2 border-t border-ink/10 space-y-1.5">
             <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-xs font-semibold {{ request()->routeIs('home') ? 'bg-ink text-paper' : 'text-ink' }}">Home</a>
             <a href="{{ route('lapangan.index') }}" class="block px-3 py-2 rounded-lg text-xs font-semibold {{ request()->routeIs('lapangan.*') ? 'bg-ink text-paper' : 'text-ink' }}">Lapangan (Spek)</a>
             <a href="{{ route('our-story') }}" class="block px-3 py-2 rounded-lg text-xs font-semibold {{ request()->routeIs('our-story') ? 'bg-ink text-paper' : 'text-ink' }}">Our Story</a>
