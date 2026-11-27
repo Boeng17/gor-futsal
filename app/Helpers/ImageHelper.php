@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 
 class ImageHelper
 {
-    public static function toCompressedBase64(UploadedFile $file, int $maxWidth = 1440, int $quality = 82): string
+    public static function toCompressedBase64(UploadedFile $file, int $maxWidth = 1080, int $quality = 75): string
     {
         $path = $file->getRealPath() ?: $file->getPathname();
         $raw = file_get_contents($path);
@@ -38,9 +38,16 @@ class ImageHelper
         imagefill($canvas, 0, 0, $white);
         imagecopyresampled($canvas, $source, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
 
-        ob_start();
-        imagejpeg($canvas, null, $quality);
-        $binary = ob_get_clean();
+        $currentQuality = $quality;
+        $binary = '';
+        $maxBytes = 240 * 1024;
+
+        do {
+            ob_start();
+            imagejpeg($canvas, null, $currentQuality);
+            $binary = ob_get_clean();
+            $currentQuality -= 10;
+        } while ($binary && strlen($binary) > $maxBytes && $currentQuality >= 40);
 
         imagedestroy($source);
         imagedestroy($canvas);
