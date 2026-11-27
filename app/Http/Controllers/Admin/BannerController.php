@@ -22,11 +22,11 @@ class BannerController extends Controller
         $validated = $request->validate([
             'title'     => 'required|string|max:150',
             'content'   => 'required|string',
-            'image'     => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'     => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'is_active' => 'nullable|boolean',
         ]);
 
-        $imageData = ImageHelper::toCompressedBase64($request->file('image'));
+        $imageData = ImageHelper::toCompressedBase64($request->file('image'), 1440, 84);
 
         Banner::create([
             'created_by' => Auth::guard('admin')->id(),
@@ -44,7 +44,7 @@ class BannerController extends Controller
         $validated = $request->validate([
             'title'     => 'required|string|max:150',
             'content'   => 'required|string',
-            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -55,7 +55,7 @@ class BannerController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            $data['image'] = ImageHelper::toCompressedBase64($request->file('image'));
+            $data['image'] = ImageHelper::toCompressedBase64($request->file('image'), 1440, 84);
         }
 
         $banner->update($data);

@@ -51,7 +51,7 @@ class FieldController extends Controller
             'open_hour'      => 'nullable|integer|min:0|max:23',
             'close_hour'     => 'nullable|integer|min:1|max:24|gt:open_hour',
             'status'         => 'required|in:active,maintenance',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         if (! Schema::hasColumn('fields', 'open_hour')) {
@@ -62,7 +62,7 @@ class FieldController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'));
+            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'), 1080, 82);
         }
 
         Field::create($validated);
@@ -79,7 +79,7 @@ class FieldController extends Controller
             'open_hour'      => 'nullable|integer|min:0|max:23',
             'close_hour'     => 'nullable|integer|min:1|max:24|gt:open_hour',
             'status'         => 'required|in:active,maintenance',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         if (! Schema::hasColumn('fields', 'open_hour')) {
@@ -90,7 +90,7 @@ class FieldController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'));
+            $validated['image'] = ImageHelper::toCompressedBase64($request->file('image'), 1080, 82);
         }
 
         $field->update($validated);
